@@ -29,7 +29,7 @@ class csvFetcher(object):
                 + str(DEFAULT_PASTEPATH))
             self.paste_path = DEFAULT_PASTEPATH
         else:
-            self.paster_path = path
+            self.paste_path = path
 
     def fetch(self, is_model):
 

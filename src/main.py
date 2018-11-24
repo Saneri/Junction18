@@ -2,9 +2,11 @@ import sys
 import os
 from csvFetcher import csvFetcher
 from csv2data import DataReader
+from data2correlations import evaluate_move
 sys.path.insert(0, '../GUI/')
 from display import ProjectionViewer
 import wireframe
+
 
 
 def set_paths():
@@ -31,15 +33,12 @@ def fetcher():
         modelpath = input("Please give the path for .csv model file")
     input("Please perform a test measurement with your sensor and then press any key to continue\n")
     testpath = fetcher.fetch(False)
-    reader = DataReader(testpath)
-    reader.read_file()
 
     return modelpath,testpath
 
-
 def view_projection(modelpath, testpath):
 
-    pv = ProjectionViewer(1600, 1200,modelpath,testpath)
+    pv = ProjectionViewer(1600, 1200,modelpath,modelpath)
 
     arm = wireframe.Wireframe()
     arm.addNodes([(0, 0, 0), (100, 0, 0)])
@@ -53,11 +52,16 @@ def view_projection(modelpath, testpath):
     pv.addWireframe('arm', arm)
     pv.run()
 
+def evaluate(modelpath, testpath):
+    model_reader = DataReader(modelpath)
+    test_reader = DataReader(testpath)
+    acc_score, rotation_score = evaluate_move(model_reader, test_reader, True)
 
 def main():
 
-    set_paths()
+    #set_paths()
     modelpath, testpath = fetcher()
+    evaluate(modelpath, testpath)
     view_projection(modelpath, testpath)
 
 

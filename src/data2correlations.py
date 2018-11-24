@@ -29,7 +29,7 @@ def find_shift(sig1, sig2):
     return sig1_s, sig2_s
 
 
-def evalauate_move(model_data, train_data, plot_data=False):
+def evaluate_move(model_data, train_data, plot_data=False):
     '''
 
     Args:
@@ -51,6 +51,9 @@ def evalauate_move(model_data, train_data, plot_data=False):
     max_rot_error = np.max([np.linalg.norm(sig3), np.linalg.norm(sig4)])
     rot_error = np.linalg.norm(sig3-sig4)/max_rot_error
 
+    print("Acceleration score: " + str(acc_error))
+    print("Rotation score: " + str(rot_error))
+
     if plot_data is True:
         fig, axes = plt.subplots(4, 1)
         axes[0].plot(sig1)
@@ -70,6 +73,6 @@ if __name__ == '__main__':
     model_data = csv2data.DataReader('../testdata/mallisuoritus.csv')
     train_data = csv2data.DataReader('../testdata/Nopea_oikein.csv')
 
-    acc, rot = evalauate_move(model_data, train_data, plot_data=True)
+    acc, rot = evaluate_move(model_data, train_data, plot_data=True)
     print('Acceleration error: {}'.format(acc))
     print('Rotation error: {}'.format(rot))
