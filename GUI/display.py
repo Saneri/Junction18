@@ -5,6 +5,8 @@ import skeleton
 
 sys.path.insert(0, './src/')
 import Kdata2spatial as k
+import csv2data
+
 import pygame
 import numpy as np
 import matrices as m
@@ -52,7 +54,7 @@ class ProjectionViewer:
     frame = 0
     
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, f1 = "./src/Mallisuoritus.csv", f2 = "./src/Mallisuoritus.csv"):
         self.width = width
         self.height = height
         self.screen = pygame.display.set_mode((width, height))
@@ -67,6 +69,9 @@ class ProjectionViewer:
         self.nodeRadius = 4
 
         self.cT = m.affine(m.rotX(0), np.array([width/2, height/2, 0]))
+
+        self.dataModel = csv2data.DataReader(f1)
+        self.dataCmp = csv2data.DataReader(f2)
 
     def addWireframe(self, name, wireframe):
         """ Add a named wireframe object. """
@@ -169,9 +174,10 @@ class ProjectionViewer:
         #df2 = pd.read_csv("testi.csv") 
 
         
-        data = k.getSpatial()
-        self.animation.append(list(data.values()))
-        self.animation.append(list(data.values()))
+        data1 = k.getSpatial(self.dataModel)
+        data2 = k.getSpatial(self.dataCmp)
+        self.animation.append(list(data1.values()))
+        self.animation.append(list(data2.values()))
 
         #ani1 = getAnimation(df)
         #ani2 = getAnimation(df2)

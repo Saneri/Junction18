@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import csv2data as cc
+
+
 
 
 class state():
@@ -56,11 +59,17 @@ def smoothen(vec, win = 9):
 
 #if __name__=='__main__':
 
-def getSpatial(fname = 'src/Mallisuoritus.csv'):
+def getSpatial(datareader, fname = 'src/Mallisuoritus.csv'):
     
-    df = pd.read_csv(fname)
-    data = df.values[:, 0:3]
-    data -= data[0, :]
+   # df = pd.read_csv(fname)
+   # data = df.values[:, 0:3]
+
+
+    data = np.asarray(datareader.acceleration)
+    data -= data[0,:]
+    
+
+    #data -= data[0, :]
     XX = data[:,0]
     YY = data[:,1].dot(-1)
     ZZ = data[:,2]
@@ -80,7 +89,6 @@ def getSpatial(fname = 'src/Mallisuoritus.csv'):
     R = []
     V = []
     
-    print(data.shape)
     for i in range(0,data.shape[0]):
         R.append(S.pos)
         V.append(S.vel)
@@ -94,10 +102,10 @@ def getSpatial(fname = 'src/Mallisuoritus.csv'):
 
     out = {}
     out['S0'] = Z0
-    out['S1'] = R.dot(0.01)
+    out['S1'] = R.dot(0.1)
 
     #return out
-
+    
     print(data.shape)
     
     fig = plt.figure()
@@ -112,6 +120,7 @@ def getSpatial(fname = 'src/Mallisuoritus.csv'):
     
     plt.show()
    
+    
     return out
 
 if __name__ == '__main__':
