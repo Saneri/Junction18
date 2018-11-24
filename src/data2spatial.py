@@ -114,7 +114,7 @@ if __name__ == '__main__':
     Ax = [-np.cos(x) for x in range(100)]
     Ay = [-np.sin(x) for x in range(100)]
     Az = [0 for x in range(100)]
-    A = np.array([Ax, Ay, Az])
+    A = np.array([Ax, Ay, Az]).tranpose
     m_data = MesasureData(A)
 
     c = SpatialConverter(m_data)
