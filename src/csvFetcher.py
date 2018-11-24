@@ -6,7 +6,8 @@ import shutil
 # This is the path on Santeri's Ubuntu 18 with samsung A3 phone
 DEFAULT_MOVESENSEPATH = "/run/user/1000/gvfs/mtp:host=%5Busb%3A001%2C011%5D/Phone/Movesense/"
 DEFAULT_PASTEPATH = "/home/santeri/Programming/Junction18/testdata/"
-PASTED_CSV_FILE_NAME = "latestRun.csv"
+MODEL_FILE_NAME = "modelRun.csv"
+TEST_FILE_NAME = "testRun.csv"
 
 # Fetch csv files from a connected phone
 class csvFetcher(object):
@@ -30,12 +31,22 @@ class csvFetcher(object):
         else:
             self.paster_path = path
 
-    def fetch(self):
+    def fetch(self, is_model):
+
         list_of_files = glob.glob(str(self.fetch_path)+'/*.csv')
+
         # Check if self_path contains any .cs files
         if not list_of_files:
             print("No .csv found from "+ self.fetch_path)
             return
         latest_file = max(list_of_files, key=os.path.getctime)
-        print(os.path.abspath(self.paste_path + PASTED_CSV_FILE_NAME))
-        shutil.move(latest_file, os.path.abspath(self.paste_path + PASTED_CSV_FILE_NAME))
+
+        # Model run and test run csv files are named differently
+        if is_model:
+            csv_name = MODEL_FILE_NAME
+        else:
+            csv_name = TEST_FILE_NAME
+
+        full_path = self.paste_path + csv_name
+        shutil.move(latest_file, os.path.abspath(full_path))
+        return(full_path)

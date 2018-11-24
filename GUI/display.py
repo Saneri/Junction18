@@ -1,5 +1,10 @@
+import sys
+sys.path.insert(0, './GUI/')
 import wireframe
 import skeleton
+
+sys.path.insert(0, './src/')
+import Kdata2spatial as k
 import pygame
 import numpy as np
 import matrices as m
@@ -17,23 +22,22 @@ key_to_function = {
     pygame.K_6:     (lambda x: x.rotateNode(1,'z')),
     pygame.K_3:     (lambda x: x.rotateNode(1,'z-'))
 }
-"""
-    pygame.K_LEFT:   (lambda x: x.translateAll('x', -10)),
-    pygame.K_RIGHT:  (lambda x: x.translateAll('x',  10)),
-    pygame.K_DOWN:   (lambda x: x.translateAll('y',  10)),
-    pygame.K_UP:     (lambda x: x.translateAll('y', -10)),
-    pygame.K_PLUS:   (lambda x: x.scaleAll(1.25)),
-    pygame.K_MINUS:  (lambda x: x.scaleAll( 0.8))}
-"""
-"""
-    pygame.K_q:      (lambda x: x.rotateAll('X',  0.1)),
-    pygame.K_w:      (lambda x: x.rotateAll('X', -0.1)),
-    pygame.K_a:      (lambda x: x.rotateAll('Y',  0.1)),
-    pygame.K_s:      (lambda x: x.rotateAll('Y', -0.1)),
-    pygame.K_z:      (lambda x: x.rotateAll('Z',  0.1)),
-    pygame.K_x:      (lambda x: x.rotateAll('Z', -0.1))
-"""
 
+def getAnimation(df):
+    """Helper function for loading the animation from dataframes"""
+    out = []
+    
+    cols = list(df.columns)
+    cols.pop(0)
+
+    for index, row in df.iterrows():
+        r = []
+        for c in cols:
+            vals = row[c][1:-1].split(",")
+            vals = [int(x) for x in vals]
+            r.append(vals)
+        out.append(r)
+    return out
 
 class ProjectionViewer:
     """ Displays 3D objects on a Pygame screen """
@@ -100,7 +104,7 @@ class ProjectionViewer:
 
                 self.animate()
                 self.frame += 1
-                self.frame = self.frame%len(self.animation)
+                self.frame = self.frame%len(self.animation[0][0])
 
             self.display()  
             pygame.display.flip()
@@ -110,16 +114,17 @@ class ProjectionViewer:
         """ Draw the wireframes on the screen. """
 
         self.screen.fill(self.background)
-
+        i = 0
+        color = [(255,255,0),(200,200,200)]
         for wireframe in self.wireframes.values():
             if self.displayEdges:
                 for edge in wireframe.edges:
+                    c = color[i]
                     r1 = np.array([edge.start.x, edge.start.y,edge.start.z,1])
-                    #R1 = (self.cT.mat*(self.camera*wireframe.ori)).dot(r1)
                     R1 = self.cT.mat.dot(self.cR.mat.dot(self.camera.mat.dot(wireframe.ori.mat.dot(r1))))
                     r2 = np.array([edge.stop.x, edge.stop.y,edge.stop.z,1])
                     R2 = self.cT.mat.dot(self.cR.mat.dot(self.camera.mat.dot(wireframe.ori.mat.dot(r2))))
-                    pygame.draw.aaline(self.screen, self.edgeColour, (R1[0], R1[1]), (R2[0],R2[1]), 1)
+                    pygame.draw.line(self.screen, c, (R1[0], R1[1]), (R2[0],R2[1]), 1)
 
             if self.displayNodes:
                 for node in wireframe.nodes:
@@ -138,68 +143,50 @@ class ProjectionViewer:
                     pygame.draw.line(self.screen, (0,255,0),[R[0],R[1]], [Y[0],Y[1]], 1)
                     pygame.draw.line(self.screen, (0,0,255),[R[0],R[1]], [Z[0],Z[1]], 1)
 
+            i+=1
 
     def translate(self, d):
+        """Translates the wireframe"""
         T = m.affine(m.rotX(0), d)
         for wireframe in self.wireframes.values():
             wireframe.ori.set(wireframe.ori*T)
 
-    def translateAll(self, axis, d):
-        """ Translate all wireframes along a given axis by d units. """
-
-        for wireframe in self.wireframes.values():
-            wireframe.translate(axis,d)
-
-    def scaleAll(self, scale):
-        """ Scale all wireframes by a given scale, centred on the centre of the screen. """
-
-        centre_x = self.width/2
-        centre_y = self.height/2
-
-        for wireframe in self.wireframes.values():
-            wireframe.scale(centre_x, centre_y, scale)
-
-    def rotateAll(self, axis, theta):
-        """ Rotate all wireframe about their centre, along a given axis by a given angle. """
-
-        rotateFunction = 'rotate' + axis
-
-        for wireframe in self.wireframes.values():
-            centre = wireframe.findCentre()
-            getattr(wireframe, rotateFunction)(centre, theta)
-
     def rotateCameraR(self, a = 0.05):
+        """Rotates the camera"""
         R = m.rotY(a*np.pi)
         aff_ = m.affine(R,np.array([0,0,0]))
         self.camera.set(aff_*self.camera)
 
     def rotateCameraL(self, a = 0.05):
+        """Rotates the camera"""
         R = m.rotY(-a*np.pi)
         aff_ = m.affine(R,np.array([0,0,0]))
         self.camera.set(aff_*self.camera)
 
     def loadAni(self):
-        df = pd.read_csv("testi.csv") 
-        anim = []
-        cols = list(df.columns)
-        cols.pop(0)
+        """Loads animation csv:s from malli.csv and testi.csv"""
+        #df = pd.read_csv("malli.csv")
+        #df2 = pd.read_csv("testi.csv") 
 
-        for index, row in df.iterrows():
-            r = []
-            for c in cols:
-                vals = row[c][1:-1].split(",")
-                vals = [int(x) for x in vals]
-                r.append(vals)
-            anim.append(r)
+        
+        data = k.getSpatial()
+        self.animation.append(list(data.values()))
+        self.animation.append(list(data.values()))
 
-        self.animation = anim
+        #ani1 = getAnimation(df)
+        #ani2 = getAnimation(df2)
+        #self.animation.append(ani1)
+        #self.animation.append(ani2)
 
     def animate(self):
+        """Helper function that runs the animation"""
         if len(self.animation) == 0:
             return
         else:
-            for wireframe in self.wireframes.values():
-                wireframe.setNodes(self.animation[self.frame]) 
+        #    print(np.asarray(self.animation).shape)
+            for i in range(len(self.wireframes)):
+                wireframe = list(self.wireframes.values())[i]
+                wireframe.setNodes(self.animation[i],self.frame)
 
     def rotateNode(self, node, axis):
         R = []
@@ -216,20 +203,15 @@ class ProjectionViewer:
 
 if __name__ == '__main__':
     pv = ProjectionViewer(1600, 1200)
-
-    #cube = wireframe.Wireframe()
-    #cube.addNodes([(x,y,z) for x in (-250,250) for y in (-250,250) for z in (-250,250)])
-    #cube.addEdges([(n,n+4) for n in range(0,4)]+[(n,n+1) for n in range(0,8,2)]+[(n,n+2) for n in (0,1,4,5)])
-
-    
-   # axes = wireframe.Wireframe()
-   # axes.addNodes([(0,0,0),(50,0,0),(0,-50,0),(0,0,50)])
-   # axes.addEdges([(0,1),(0,2),(0,3)])
-    
+ 
     arm = wireframe.Wireframe()
-    arm.addNodes([(0,0,0), (100,0,0), (200,0,0)])
-    arm.addEdges([(0,1),(1,2)])
+    arm.addNodes([(0,0,0), (100,0,0)])
+    arm.addEdges([(0,1)])
 
-    #pv.addWireframe('axes', axes)
+    #arm2 = wireframe.Wireframe()
+    #arm2.addNodes([(0,0,0), (100,00,0), (200,0,0)])
+    #arm2.addEdges([(0,1),(1,2)])
+    
+    #pv.addWireframe('model', arm2)
     pv.addWireframe('arm', arm)
     pv.run()
