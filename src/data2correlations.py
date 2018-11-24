@@ -6,6 +6,9 @@ import numpy as np
 
 def find_shift(sig1, sig2):
     '''Shift shorter signal to be at same point'''
+
+    sig1[:, 2] = sig1[:, 2] - 9.81
+    sig2[:, 2] = sig2[:, 2] - 9.81
     l_s1 = sig1.shape[0]
     l_s2 = sig2.shape[0]
     L = np.max([l_s1, l_s2])
@@ -55,15 +58,19 @@ def evaluate_move(model_data, train_data, plot_data=False):
     print("Rotation score: " + str(rot_error))
 
     if plot_data is True:
-        fig, axes = plt.subplots(4, 1)
-        axes[0].plot(sig1)
-        axes[0].legend(['x', 'y', 'z'])
-        axes[1].plot(sig2)
-        axes[1].legend(['x', 'y', 'z'])
-        axes[2].plot(sig3)
-        axes[2].legend(['x', 'y', 'z'])
-        axes[3].plot(sig4)
-        axes[3].legend(['x', 'y', 'z'])
+        fig, axes = plt.subplots(2, 2)
+        axes[0, 0].plot(sig1)
+        axes[0, 0].legend(['x', 'y', 'z'])
+        axes[0, 0].set_title('Model acceleration')
+        axes[1, 0].plot(sig2)
+        axes[1, 0].legend(['x', 'y', 'z'])
+        axes[1, 0].set_title('Training acceleration')
+        axes[0, 1].plot(sig3)
+        axes[0, 1].legend(['x', 'y', 'z'])
+        axes[0, 1].set_title('Model rotation')
+        axes[1, 1].plot(sig4)
+        axes[1, 1].legend(['x', 'y', 'z'])
+        axes[1, 1].set_title('Training rotation')
         plt.show()
 
     return acc_error, rot_error
