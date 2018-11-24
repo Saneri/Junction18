@@ -43,10 +43,13 @@ def evalauate_move(model_data, train_data, plot_data=False):
 
     sig1, sig2 = find_shift(model_data.acceleration, train_data.acceleration)
 
-    acc_error = np.power(np.linalg.norm(sig1-sig2), 2)
+    max_acc_error = np.max([np.linalg.norm(sig1), np.linalg.norm(sig2)])
+    acc_error = np.linalg.norm(sig1-sig2)/max_acc_error
+
     sig3, sig4 = find_shift(model_data.ang_velocity, train_data.ang_velocity)
 
-    rot_error = np.linalg.norm(sig3-sig4)
+    max_rot_error = np.max([np.linalg.norm(sig3), np.linalg.norm(sig4)])
+    rot_error = np.linalg.norm(sig3-sig4)/max_rot_error
 
     if plot_data is True:
         fig, axes = plt.subplots(4, 1)
@@ -65,7 +68,7 @@ def evalauate_move(model_data, train_data, plot_data=False):
 
 if __name__ == '__main__':
     model_data = csv2data.DataReader('../testdata/mallisuoritus.csv')
-    train_data = csv2data.DataReader('../testdata/Aivan_tautta_kuraa.csv')
+    train_data = csv2data.DataReader('../testdata/Nopea_oikein.csv')
 
     acc, rot = evalauate_move(model_data, train_data, plot_data=True)
     print('Acceleration error: {}'.format(acc))
