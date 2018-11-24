@@ -4,6 +4,7 @@ from csvFetcher import csvFetcher
 from csv2data import DataReader
 sys.path.insert(0, '../GUI/')
 from display import ProjectionViewer
+import wireframe
 
 
 def set_paths():
@@ -18,10 +19,9 @@ def set_paths():
         os.environ["MOVESENSEPASTEPATH"] = answer
 
 
-def fetcher(answer):
+def fetcher():
 
     # Creates an instance of csvFetcher to fetch latest csv-files
-    print("Test:" +str(answer))
     fetcher = csvFetcher()
     answer = input("Do you want to create a new model? (y = yes, n=no)\n")
     if answer == "yes" or answer == "y":
@@ -57,7 +57,7 @@ def view_projection(modelpath, testpath):
 def main():
 
     set_paths()
-    modelpath, testpath = fetcher(answer)
+    modelpath, testpath = fetcher()
     view_projection(modelpath, testpath)
 
 

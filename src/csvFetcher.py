@@ -17,7 +17,7 @@ class csvFetcher(object):
         # Define
         path = os.getenv("MOVESENSEPATH")
         if path is None:
-            print("Couldn't find MOVESENSEPATH env variable: using default path "\
+            print("Using default path "\
                 + str(DEFAULT_MOVESENSEDIR))
             self.fetch_path = DEFAULT_MOVESENSEDIR
         else:
@@ -25,7 +25,7 @@ class csvFetcher(object):
 
         path = os.getenv("MOVESENSEPASTEPATH")
         if path is None:
-            print("Couldn't find MOVESENSEPASTEPATH env variable: using default path "\
+            print("Using default path "\
                 + str(DEFAULT_PASTEPATH))
             self.paste_path = DEFAULT_PASTEPATH
         else:
