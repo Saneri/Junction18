@@ -9,7 +9,6 @@ class Node:
         self.z = coordinates[2]
         
         self.ori = m.affine(m.rotX(0), np.array([0,0,0]))
-        print(self.ori)
 
     def rotate(self,M):
         self.ori.set(M.mat.dot(self.ori.mat))

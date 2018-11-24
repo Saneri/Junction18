@@ -30,4 +30,3 @@ class SpatialConverter(object):
             self.
         raise NotImplementedError
 
-    def save_to_csv(self):
