@@ -36,8 +36,7 @@ class rotX(rot):
         rot.__init__(self)
         self.mat = np.matrix([[1,0,0],[0,np.cos(a), -np.sin(a)],[0,np.sin(a),np.cos(a)]])
 
-class rotY(rot):
-        
+class rotY(rot): 
     def __init__(self,a):
         rot.__init__(self)
         self.mat = np.matrix([[np.cos(a),0,np.sin(a)],[0,1,0],[-np.sin(a),0,np.cos(a)]])

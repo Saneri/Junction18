@@ -8,6 +8,11 @@ class Node:
         self.y = coordinates[1]
         self.z = coordinates[2]
         
+        self.ori = m.affine(m.rotX(0),np.array([0,0,0]))
+
+    def rotate(M):
+        self.ori.set(M.mat*self.ori.mat)
+
 class Edge:
     def __init__(self, start, stop):
         self.start = start
@@ -18,7 +23,6 @@ class Wireframe:
     def __init__(self):
         self.nodes = []
         self.edges = []
-        print(self.ori)
 
     def addNodes(self, nodeList):
         for node in nodeList:
@@ -82,6 +86,15 @@ class Wireframe:
 
     def transform(self,M):
         self.ori.set(M*self.ori)
+
+    def setNodes(self,arr):
+        print(arr)
+        for i in range(0, len(arr)):
+            (x,y,z) = arr[i]
+            self.nodes[i].x = x
+            self.nodes[i].y = y
+            self.nodes[i].z = z
+
 
 
 if __name__ == "__main__":

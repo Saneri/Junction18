@@ -1,7 +1,9 @@
 import wireframe
+import skeleton
 import pygame
 import numpy as np
 import matrices as m
+import pandas as pd
 
 key_to_function = {
     pygame.K_LEFT:  (lambda x: x.translate(np.array([-10,0,0]))),
@@ -33,6 +35,13 @@ class ProjectionViewer:
     camera = m.affine(m.rotX(0), np.array([0,0,0]))
     cT = m.affine(m.rotX(0), np.array([500,500,0]))
     cR = m.affine(m.rotX(np.pi/6),np.array([0,0,0]))
+    rotationToggle = False
+    animToggle = False
+
+    animation = []
+    frame = 0
+    
+
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -47,6 +56,8 @@ class ProjectionViewer:
         self.edgeColour = (200,200,200)
         self.nodeRadius = 4
 
+        self.cT = m.affine(m.rotX(0), np.array([width/2, height/2, 0]))
+
     def addWireframe(self, name, wireframe):
         """ Add a named wireframe object. """
 
@@ -54,6 +65,8 @@ class ProjectionViewer:
 
     def run(self):
         """ Create a pygame screen until it is closed. """
+
+        clock = pygame.time.Clock()
 
         running = True
         while running:
@@ -67,9 +80,25 @@ class ProjectionViewer:
                         self.rotateCameraR()
                     elif event.key == pygame.K_e:
                         self.rotateCameraL()
-                    
+                    elif event.key == pygame.K_r:
+                        self.rotationToggle = not self.rotationToggle
+                    elif event.key == pygame.K_a:
+                        self.animToggle = not self.animToggle
+            
+            if self.rotationToggle:
+                self.rotateCameraR(0.01)
+
+            if self.animToggle:
+                if len(self.animation) == 0:
+                    self.loadAni()
+
+                self.animate()
+                self.frame += 1
+                self.frame = self.frame%len(self.animation)
+
             self.display()  
             pygame.display.flip()
+            clock.tick(60)
         
     def display(self):
         """ Draw the wireframes on the screen. """
@@ -123,22 +152,56 @@ class ProjectionViewer:
             centre = wireframe.findCentre()
             getattr(wireframe, rotateFunction)(centre, theta)
 
-    def rotateCameraR(self):
-        R = m.rotY(0.05*np.pi)
+    def rotateCameraR(self, a = 0.05):
+        R = m.rotY(a*np.pi)
         aff_ = m.affine(R,np.array([0,0,0]))
         self.camera.set(aff_*self.camera)
 
-    def rotateCameraL(self):
-        R = m.rotY(-0.05*np.pi)
+    def rotateCameraL(self, a = 0.05):
+        R = m.rotY(-a*np.pi)
         aff_ = m.affine(R,np.array([0,0,0]))
         self.camera.set(aff_*self.camera)
+
+    def loadAni(self):
+        df = pd.read_csv("testi.csv") 
+        anim = []
+        cols = list(df.columns)
+        cols.pop(0)
+
+        for index, row in df.iterrows():
+            r = []
+            for c in cols:
+                vals = row[c][1:-1].split(",")
+                vals = [int(x) for x in vals]
+                r.append(vals)
+            anim.append(r)
+
+        self.animation = anim
+
+    def animate(self):
+        if len(self.animation) == 0:
+            return
+        else:
+            for wireframe in self.wireframes.values():
+                wireframe.setNodes(self.animation[self.frame]) 
+
 
 if __name__ == '__main__':
     pv = ProjectionViewer(1600, 1200)
 
-    cube = wireframe.Wireframe()
-    cube.addNodes([(x,y,z) for x in (-250,250) for y in (-250,250) for z in (-250,250)])
-    cube.addEdges([(n,n+4) for n in range(0,4)]+[(n,n+1) for n in range(0,8,2)]+[(n,n+2) for n in (0,1,4,5)])
+    #cube = wireframe.Wireframe()
+    #cube.addNodes([(x,y,z) for x in (-250,250) for y in (-250,250) for z in (-250,250)])
+    #cube.addEdges([(n,n+4) for n in range(0,4)]+[(n,n+1) for n in range(0,8,2)]+[(n,n+2) for n in (0,1,4,5)])
+
     
-    pv.addWireframe('cube', cube)
+   # axes = wireframe.Wireframe()
+   # axes.addNodes([(0,0,0),(50,0,0),(0,-50,0),(0,0,50)])
+   # axes.addEdges([(0,1),(0,2),(0,3)])
+    
+    arm = wireframe.Wireframe()
+    arm.addNodes([(0,0,0), (100,0,0), (200,0,0)])
+    arm.addEdges([(0,1),(1,2)])
+
+    #pv.addWireframe('axes', axes)
+    pv.addWireframe('arm', arm)
     pv.run()
