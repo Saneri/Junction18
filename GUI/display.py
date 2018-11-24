@@ -1,8 +1,9 @@
 import sys
-sys.path.insert(0, 'GUI/')
+sys.path.insert(0, './GUI/')
 import wireframe
 import skeleton
-sys.path.insert(0, '../src/')
+
+sys.path.insert(0, './src/')
 import Kdata2spatial as k
 import pygame
 import numpy as np
@@ -103,7 +104,7 @@ class ProjectionViewer:
 
                 self.animate()
                 self.frame += 1
-                self.frame = self.frame%len(self.animation[0])
+                self.frame = self.frame%len(self.animation[0][0])
 
             self.display()  
             pygame.display.flip()
@@ -164,22 +165,28 @@ class ProjectionViewer:
 
     def loadAni(self):
         """Loads animation csv:s from malli.csv and testi.csv"""
-        df = pd.read_csv("malli.csv")
-        df2 = pd.read_csv("testi.csv") 
+        #df = pd.read_csv("malli.csv")
+        #df2 = pd.read_csv("testi.csv") 
 
-        ani1 = getAnimation(df)
-        ani2 = getAnimation(df2)
-        self.animation.append(ani1)
-        self.animation.append(ani2)
+        
+        data = k.getSpatial()
+        self.animation.append(list(data.values()))
+        self.animation.append(list(data.values()))
+
+        #ani1 = getAnimation(df)
+        #ani2 = getAnimation(df2)
+        #self.animation.append(ani1)
+        #self.animation.append(ani2)
 
     def animate(self):
         """Helper function that runs the animation"""
         if len(self.animation) == 0:
             return
         else:
+        #    print(np.asarray(self.animation).shape)
             for i in range(len(self.wireframes)):
                 wireframe = list(self.wireframes.values())[i]
-                wireframe.setNodes(self.animation[i][self.frame])
+                wireframe.setNodes(self.animation[i],self.frame)
 
     def rotateNode(self, node, axis):
         R = []
@@ -198,13 +205,13 @@ if __name__ == '__main__':
     pv = ProjectionViewer(1600, 1200)
  
     arm = wireframe.Wireframe()
-    arm.addNodes([(0,0,0), (100,0,0), (200,0,0)])
-    arm.addEdges([(0,1),(1,2)])
+    arm.addNodes([(0,0,0), (100,0,0)])
+    arm.addEdges([(0,1)])
 
-    arm2 = wireframe.Wireframe()
-    arm2.addNodes([(0,50,0), (100,50,0), (200,50,0)])
-    arm2.addEdges([(0,1),(1,2)])
+    #arm2 = wireframe.Wireframe()
+    #arm2.addNodes([(0,0,0), (100,00,0), (200,0,0)])
+    #arm2.addEdges([(0,1),(1,2)])
     
-    pv.addWireframe('model', arm2)
+    #pv.addWireframe('model', arm2)
     pv.addWireframe('arm', arm)
     pv.run()
