@@ -1,5 +1,9 @@
+import sys
+sys.path.insert(0, 'GUI/')
 import wireframe
 import skeleton
+sys.path.insert(0, '../src/')
+import Kdata2spatial as k
 import pygame
 import numpy as np
 import matrices as m
