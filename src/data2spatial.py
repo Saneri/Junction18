@@ -31,27 +31,8 @@ class SpatialConverter(object):
         self.pos = np.zeros((m_data.length, 3))
         self.rotation = np.eye(3)
         self.velocity = np.zeros((m_data.length, 3))
+        self.velocity[0, :] = np.array([0, 1, 0])
         self.ang = np.zeros((m_data.length, 3))
-
-    def _evaluate(self, vel, acc, dt, d):
-        dpos = vel + dt * d.dv
-        dv = acc
-        return Derivative(dpos, dv)
-
-    def take_step(self, acceleration, velocity, pos, dt):
-        der = Derivative(velocity, acceleration)
-        a = self._evaluate(velocity, acceleration, 0, der)
-        b = self._evaluate(velocity, acceleration, 0.5*dt, a)
-        c = self._evaluate(velocity, acceleration, 0.5*dt, b)
-        d = self._evaluate(velocity, acceleration, dt, c)
-
-        dxdt = 1/6 * (a.dpos + 2 * (b.dpos + c.dpos) + d.dpos)
-        dvdt = 1/6 * (a.dv + 2 * (b.dv + c.dv) + d.dv)
-
-        position = pos + dxdt * self.m_data.dt
-        velocity = velocity + dvdt * self.m_data.dt
-
-        return position, velocity
 
     def _x_r(self, angle):
         a = angle*np.pi/180
@@ -84,6 +65,26 @@ class SpatialConverter(object):
         self.pos[index] = pos
         self.velocity[index] = velocity
 
+    def _evaluate(self, vel, acc, dt, d):
+        dpos = vel + dt * d.dv
+        dv = acc
+        return Derivative(dpos, dv)
+
+    def take_step(self, acceleration, velocity, pos, dt):
+        der = Derivative(velocity, acceleration)
+        a = self._evaluate(velocity, acceleration, 0, der)
+        b = self._evaluate(velocity, acceleration, 0.5*dt, a)
+        c = self._evaluate(velocity, acceleration, 0.5*dt, b)
+        d = self._evaluate(velocity, acceleration, dt, c)
+
+        dxdt = 1/6 * (a.dpos + 2 * (b.dpos + c.dpos) + d.dpos)
+        dvdt = 1/6 * (a.dv + 2 * (b.dv + c.dv) + d.dv)
+
+        position = pos + dxdt * self.m_data.dt
+        velocity = velocity + dvdt * self.m_data.dt
+
+        return position, velocity
+
     def convert_to_spatial_coordinates(self):
         for i in range(self.m_data.length-1):
             # ang_vel = self.m_data.ang_vel[i]
@@ -114,9 +115,15 @@ if __name__ == '__main__':
     Ax = [-np.cos(x) for x in range(100)]
     Ay = [-np.sin(x) for x in range(100)]
     Az = [0 for x in range(100)]
+<<<<<<< HEAD
     A = np.array([Ax, Ay, Az]).tranpose
     m_data = MesasureData(A)
+=======
+    A = np.array([Ax, Ay, Az])
+    m_data = MesasureData(A.transpose())
+>>>>>>> 2c572441438755da51ebd1f44e6d6d252e351e00
 
     c = SpatialConverter(m_data)
     c.convert_to_spatial_coordinates()
     plt.plot(c.pos)
+    plt.show()
