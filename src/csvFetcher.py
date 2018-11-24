@@ -31,7 +31,7 @@ class csvFetcher(object):
         else:
             self.paster_path = path
 
-    def fetch(self, isModel):
+    def fetch(self, is_model):
 
         list_of_files = glob.glob(str(self.fetch_path)+'/*.csv')
 
@@ -42,9 +42,11 @@ class csvFetcher(object):
         latest_file = max(list_of_files, key=os.path.getctime)
 
         # Model run and test run csv files are named differently
-        if isModel:
+        if is_model:
             csv_name = MODEL_FILE_NAME
         else:
             csv_name = TEST_FILE_NAME
 
-        shutil.move(latest_file, os.path.abspath(self.paste_path + csv_name))
+        full_path = self.paste_path + csv_name
+        shutil.move(latest_file, os.path.abspath(full_path))
+        return(full_path)
