@@ -6,8 +6,11 @@ class DataReader:
 
     def __init__(self, filename):
         self.file = filename
-        self.acceleration = np.empty(shape=[0,3])
-        self.velocity = np.empty(shape=[0,3])
+        self.acceleration = np.empty(shape=[0, 3])
+        self.velocity = np.empty(shape=[0, 3])
+        self.read_file()
+        self.acceleration = self.acceleration.astype(np.float)
+        self.acceleration = self.velocity.astype(np.float)
 
     # Only logs data if both LinearAcc and AngularVelocity services are recording
     def read_file(self):
@@ -18,7 +21,7 @@ class DataReader:
             for row in reader:
                 row = ''.join(row)
                 row = row.split(",")
-                if (row[0] == "LinearAcc") and  (last_service_value == "AngularVelocity"):
+                if (row[0] == "LinearAcc") and (last_service_value == "AngularVelocity"):
                     self.column_to_array(row)
                 elif (row[0] == "AngularVelocity") and (last_service_value == "LinearAcc"):
                     self.column_to_array(row)
@@ -29,5 +32,3 @@ class DataReader:
             self.acceleration = np.append(self.acceleration, [[row[1], row[2], row[3]]], axis=0)
         else:
             self.velocity = np.append(self.velocity, [[row[1], row[2], row[3]]], axis=0)
-
-
