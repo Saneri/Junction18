@@ -195,6 +195,8 @@ class ProjectionViewer:
                 for i in range(l2,l1):
                     v = np.append(j,np.array([0,0,0]))
 
+        print(np.asarray(data1).shape)
+        print(np.asarray(data2).shape)
 
         self.animation.append(list(data1.values()))
         self.animation.append(list(data2.values()))
