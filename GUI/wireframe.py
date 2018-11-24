@@ -1,4 +1,6 @@
 import math
+import matrices as m
+import numpy as np
 
 class Node:
     def __init__(self, coordinates):
@@ -12,9 +14,11 @@ class Edge:
         self.stop  = stop
 
 class Wireframe:
+    ori = m.affine(m.rotX(0),np.array([0,0,0]))
     def __init__(self):
         self.nodes = []
         self.edges = []
+        print(self.ori)
 
     def addNodes(self, nodeList):
         for node in nodeList:
@@ -75,6 +79,9 @@ class Wireframe:
             theta  = math.atan2(y, x) + radians
             node.x = cx + d * math.cos(theta)
             node.y = cy + d * math.sin(theta)
+
+    def transform(self,M):
+        self.ori.set(M*self.ori)
 
 
 if __name__ == "__main__":

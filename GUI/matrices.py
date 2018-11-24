@@ -1,11 +1,12 @@
 import numpy as np
 
-def multiply(A, B):
-    out = A.dot(B)
 
-    return out
+class rot():
+    def multiply(self,A, B):
+        out = A.dot(B)
+        return out
 
-class rot:
+    mat = 0
     def __init__(self):
         self.mat = np.matrix([[1,0,0],[0,1,0],[0,0,1]])
 
@@ -25,7 +26,7 @@ class rot:
         self.mat = M
 
     def __mul__(self, M):
-        return multiply(self.mat, M.mat)
+        return self.multiply(self.mat, M.mat)
 
     def shape(self):
         return self.mat.shape
@@ -50,8 +51,10 @@ class rotZ(rot):
 
 class affine(rot):
     mat = np.zeros((4,4))
+    x = np.array([0,0,0,0])
     def __init__(self, R, x):
         xx,yy = R.shape()
+        self.mat = np.zeros((4,4))
         el = 0
         for i in range(0,xx):
             for j in range(0,yy):
@@ -66,10 +69,18 @@ class affine(rot):
     
     def __mul__(self, x):
         if isinstance(x, np.ndarray):
-            return multiply(self.mat, x)
+            print("tick")
+            return self.multiply(self.mat, x)
         else:
-            return multiply(self.mat, x.mat)
+            return self.multiply(self.mat, x.mat)
     
-
+    def orientation(self):
+        out = np.array([])
+        for i in range(0,3):
+            row = np.array([])
+            for j in range(0,3):
+                row.append(self.mat[i][j])
+            out.append(row)
+        return out
 
 

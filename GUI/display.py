@@ -4,13 +4,19 @@ import numpy as np
 import matrices as m
 
 key_to_function = {
+    pygame.K_LEFT:  (lambda x: x.translate(np.array([-10,0,0]))),
+    pygame.K_RIGHT: (lambda x: x.translate(np.array([ 10,0,0]))),
+    pygame.K_UP:    (lambda x: x.translate(np.array([0,-10,0]))),
+    pygame.K_DOWN:  (lambda x: x.translate(np.array([0, 10,0])))
+}
+"""
     pygame.K_LEFT:   (lambda x: x.translateAll('x', -10)),
     pygame.K_RIGHT:  (lambda x: x.translateAll('x',  10)),
     pygame.K_DOWN:   (lambda x: x.translateAll('y',  10)),
     pygame.K_UP:     (lambda x: x.translateAll('y', -10)),
     pygame.K_PLUS:   (lambda x: x.scaleAll(1.25)),
     pygame.K_MINUS:  (lambda x: x.scaleAll( 0.8))}
-
+"""
 """
     pygame.K_q:      (lambda x: x.rotateAll('X',  0.1)),
     pygame.K_w:      (lambda x: x.rotateAll('X', -0.1)),
@@ -24,8 +30,9 @@ key_to_function = {
 class ProjectionViewer:
     """ Displays 3D objects on a Pygame screen """
 
-    camera = m.affine(m.rotX(0), np.array([-1,0,0]))
-
+    camera = m.affine(m.rotX(0), np.array([0,0,0]))
+    cT = m.affine(m.rotX(0), np.array([500,500,0]))
+    cR = m.affine(m.rotX(np.pi/6),np.array([0,0,0]))
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -72,13 +79,25 @@ class ProjectionViewer:
         for wireframe in self.wireframes.values():
             if self.displayEdges:
                 for edge in wireframe.edges:
-                    pygame.draw.aaline(self.screen, self.edgeColour, (edge.start.x, edge.start.y), (edge.stop.x, edge.stop.y), 1)
+                    r1 = np.array([edge.start.x, edge.start.y,edge.start.z,1])
+                    #R1 = (self.cT.mat*(self.camera*wireframe.ori)).dot(r1)
+                    R1 = self.cT.mat.dot(self.cR.mat.dot(self.camera.mat.dot(wireframe.ori.mat.dot(r1))))
+                    r2 = np.array([edge.stop.x, edge.stop.y,edge.stop.z,1])
+                    R2 = self.cT.mat.dot(self.cR.mat.dot(self.camera.mat.dot(wireframe.ori.mat.dot(r2))))
+                    #print(R2)
+                    pygame.draw.aaline(self.screen, self.edgeColour, (R1[0], R1[1]), (R2[0],R2[1]), 1)
 
             if self.displayNodes:
                 for node in wireframe.nodes:
                     rr = np.array([node.x, node.y, node.z, 1])
-                    R = self.camera*rr
+                    #R = (self.cT.mat*(self.camera*wireframe.ori)).dot(rr)
+                    R = self.cT.mat.dot(self.cR.mat.dot(self.camera.mat.dot(wireframe.ori.mat.dot(rr))))
                     pygame.draw.circle(self.screen, self.nodeColour, (int(R[0]), int(R[1])), self.nodeRadius, 0)
+
+    def translate(self, d):
+        T = m.affine(m.rotX(0), d)
+        for wireframe in self.wireframes.values():
+            wireframe.ori.set(wireframe.ori*T)
 
     def translateAll(self, axis, d):
         """ Translate all wireframes along a given axis by d units. """
@@ -105,13 +124,12 @@ class ProjectionViewer:
             getattr(wireframe, rotateFunction)(centre, theta)
 
     def rotateCameraR(self):
-        R = m.rotY(0.25*np.pi)
+        R = m.rotY(0.05*np.pi)
         aff_ = m.affine(R,np.array([0,0,0]))
-        print(aff_)
         self.camera.set(aff_*self.camera)
 
     def rotateCameraL(self):
-        R = m.rotY(-0.25*np.pi)
+        R = m.rotY(-0.05*np.pi)
         aff_ = m.affine(R,np.array([0,0,0]))
         self.camera.set(aff_*self.camera)
 
@@ -119,7 +137,7 @@ if __name__ == '__main__':
     pv = ProjectionViewer(1600, 1200)
 
     cube = wireframe.Wireframe()
-    cube.addNodes([(x,y,z) for x in (50,250) for y in (50,250) for z in (50,250)])
+    cube.addNodes([(x,y,z) for x in (-250,250) for y in (-250,250) for z in (-250,250)])
     cube.addEdges([(n,n+4) for n in range(0,4)]+[(n,n+1) for n in range(0,8,2)]+[(n,n+2) for n in (0,1,4,5)])
     
     pv.addWireframe('cube', cube)
