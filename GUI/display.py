@@ -176,16 +176,25 @@ class ProjectionViewer:
 
         data1 = k.getSpatial(self.dataModel)
         data2 = k.getSpatial(self.dataCmp)
-
-        l1 = len(data1[0])
-        l2 = len(data2[0])
+        
+        l1 = len(list(data1.values())[0])
+        l2 = len(list(data2.values())[0])
+    
+        print(l1)
+        print(l2)
 
         if(l1 < l2):
-            for i in data1:
-                np.pad(i,l2,constant=np.array([0,0,0]))
+            for j in data1.values():
+                v = np.asarray(j)
+                for i in range(l1,l2):
+                    v = np.append(j,np.array([0,0,0]))
+
         else:
-            for i in data2:
-                np.pad(i,l1,constant=np.array([0,0,0]))
+            for j in data2.values():
+                v = np.asarray(j)
+                for i in range(l2,l1):
+                    v = np.append(j,np.array([0,0,0]))
+
 
         self.animation.append(list(data1.values()))
         self.animation.append(list(data2.values()))
