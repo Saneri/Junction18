@@ -9,25 +9,13 @@ from display import ProjectionViewer
 def set_paths():
 
     # sets variable paths if the user so wishes
-    answer = input("Would you like to set the environment variable 'MOVESENSEPATH'? (press enter to skip)\n")
+    answer = input("\nWould you like to set the environment variable 'MOVESENSEPATH'? (press enter to skip)\n")
     if len(answer) != 0:
         os.environ["MOVESENSEPATH"] = answer
 
     answer = input("Would you like to set the environment variable 'MOVESENSEPASTEPATH'? (press enter to skip)\n")
     if len(answer) != 0:
         os.environ["MOVESENSEPASTEPATH"] = answer
-
-
-def ask_data_type():
-
-    # Asks the data type
-    while True:
-        answer = input("Is this a training move (type: 't') or a model move (type: 'm')?\n")
-        if answer != "t" and answer != "m":
-            print("Please type 't' for training move or 'm' for model move!")
-        else:
-            break
-    return answer
 
 
 def fetcher(answer):
@@ -39,10 +27,13 @@ def fetcher(answer):
     if answer == "yes" or answer == "y":
         input("Please perform a model measurement with your sensor and then press any key to continue\n")
         modelpath = fetcher.fetch(True)
+    else:
+        modelpath = input("Please give the path for .csv model file")
     input("Please perform a test measurement with your sensor and then press any key to continue\n")
     testpath = fetcher.fetch(False)
     reader = DataReader(testpath)
     reader.read_file()
+
     return modelpath,testpath
 
 
@@ -66,7 +57,6 @@ def view_projection(modelpath, testpath):
 def main():
 
     set_paths()
-    answer = ask_data_type()
     modelpath, testpath = fetcher(answer)
     view_projection(modelpath, testpath)
 
