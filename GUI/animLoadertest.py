@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 
 def gencsv():
-    X = range(100) + np.ones(100, dtype ='int')*50
-    Y = range(100) + np.ones(100, dtype ='int')*50
+    X = range(100) + np.ones(100, dtype ='int')*0
+    Y = range(100) + np.ones(100, dtype ='int')*0
 
-    Z = np.ones(100,dtype='int')
+    Z = np.ones(100,dtype='int')*0
 
     R = list(zip(X,Y,Z))
 
-    Y0 = np.ones(100, dtype = 'int')*50
+    Y0 = np.ones(100, dtype = 'int')*0
     X0 = np.zeros(100, dtype = 'int')
     R0 = list(zip(X0,Y0,X0))
 
