@@ -22,9 +22,9 @@ class SpatialConverter(object):
         self.ang = np.zeros(m_data.length, 3)
 
     def _evaluate(self, dt, d):
-        d.dpos = self.velocity[self.ind] + dt * d.dv
-        d.dv = self.acceleration[self.ind]
-        return d
+        dpos = self.velocity[self.ind] + dt * d.dv
+        dv = self.acceleration[self.ind]
+        return Derivative(dpos, dv)
 
     def take_step(self, acceleration, velocity, pos, dt):
         der = Derivative(velocity, acceleration)
