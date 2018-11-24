@@ -89,11 +89,11 @@ class Wireframe:
         self.ori.set(M*self.ori)
 
     def setNodes(self,arr):
+        print(arr.shape)
         for i in range(0, len(arr)):
-            (x,y,z) = arr[i]
-            self.nodes[i].x = x
-            self.nodes[i].y = y
-            self.nodes[i].z = z
+            self.nodes[i].x = arr[i][0]
+            self.nodes[i].y = arr[i][1]
+            self.nodes[i].z = arr[i][2]
 
 
 

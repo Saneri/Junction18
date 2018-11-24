@@ -1,5 +1,10 @@
+import sys
+sys.path.insert(0, 'GUI/')
+
 import wireframe
 import skeleton
+sys.path.insert(0,'../src/')
+import Kdata2spatial as k
 import pygame
 import numpy as np
 import matrices as m
@@ -179,11 +184,14 @@ class ProjectionViewer:
         self.camera.set(aff_*self.camera)
 
     def loadAni(self):
-        df = pd.read_csv("testi.csv") 
-        anim = []
-        cols = list(df.columns)
-        cols.pop(0)
+        #df = pd.read_csv("testi.csv") 
+        data = k.getSpatial()
+        #anim = []
+        #for c in data.keys():
+        #    anim.append(data[c])
+        self.animation = data
 
+        """
         for index, row in df.iterrows():
             r = []
             for c in cols:
@@ -193,13 +201,15 @@ class ProjectionViewer:
             anim.append(r)
 
         self.animation = anim
-
+        """
     def animate(self):
         if len(self.animation) == 0:
             return
         else:
-            for wireframe in self.wireframes.values():
-                wireframe.setNodes(self.animation[self.frame]) 
+            i = 0
+            #for wireframe in self.wireframes.values():
+            #    wireframe.setNodes(self.animation[i][self.frame]) 
+            #    i+=1
 
     def rotateNode(self, node, axis):
         R = []
