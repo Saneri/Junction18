@@ -8,10 +8,11 @@ class Node:
         self.y = coordinates[1]
         self.z = coordinates[2]
         
-        self.ori = m.affine(m.rotX(0),np.array([0,0,0]))
+        self.ori = m.affine(m.rotX(0), np.array([0,0,0]))
+        print(self.ori)
 
-    def rotate(M):
-        self.ori.set(M.mat*self.ori.mat)
+    def rotate(self,M):
+        self.ori.set(M.mat.dot(self.ori.mat))
 
 class Edge:
     def __init__(self, start, stop):
@@ -88,7 +89,6 @@ class Wireframe:
         self.ori.set(M*self.ori)
 
     def setNodes(self,arr):
-        print(arr)
         for i in range(0, len(arr)):
             (x,y,z) = arr[i]
             self.nodes[i].x = x

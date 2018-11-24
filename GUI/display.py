@@ -9,7 +9,13 @@ key_to_function = {
     pygame.K_LEFT:  (lambda x: x.translate(np.array([-10,0,0]))),
     pygame.K_RIGHT: (lambda x: x.translate(np.array([ 10,0,0]))),
     pygame.K_UP:    (lambda x: x.translate(np.array([0,-10,0]))),
-    pygame.K_DOWN:  (lambda x: x.translate(np.array([0, 10,0])))
+    pygame.K_DOWN:  (lambda x: x.translate(np.array([0, 10,0]))),
+    pygame.K_4:     (lambda x: x.rotateNode(1,'x')),
+    pygame.K_1:     (lambda x: x.rotateNode(1,'x-')),
+    pygame.K_5:     (lambda x: x.rotateNode(1,'y')),
+    pygame.K_2:     (lambda x: x.rotateNode(1,'y-')),
+    pygame.K_6:     (lambda x: x.rotateNode(1,'z')),
+    pygame.K_3:     (lambda x: x.rotateNode(1,'z-'))
 }
 """
     pygame.K_LEFT:   (lambda x: x.translateAll('x', -10)),
@@ -113,15 +119,25 @@ class ProjectionViewer:
                     R1 = self.cT.mat.dot(self.cR.mat.dot(self.camera.mat.dot(wireframe.ori.mat.dot(r1))))
                     r2 = np.array([edge.stop.x, edge.stop.y,edge.stop.z,1])
                     R2 = self.cT.mat.dot(self.cR.mat.dot(self.camera.mat.dot(wireframe.ori.mat.dot(r2))))
-                    #print(R2)
                     pygame.draw.aaline(self.screen, self.edgeColour, (R1[0], R1[1]), (R2[0],R2[1]), 1)
 
             if self.displayNodes:
                 for node in wireframe.nodes:
                     rr = np.array([node.x, node.y, node.z, 1])
-                    #R = (self.cT.mat*(self.camera*wireframe.ori)).dot(rr)
                     R = self.cT.mat.dot(self.cR.mat.dot(self.camera.mat.dot(wireframe.ori.mat.dot(rr))))
                     pygame.draw.circle(self.screen, self.nodeColour, (int(R[0]), int(R[1])), self.nodeRadius, 0)
+                    ori = np.asarray(node.ori.mat)
+                    X = self.cT.mat.dot(self.cR.mat.dot(self.camera.mat.dot(ori.dot(np.array([20,0,0, 0])))))
+                    X += R
+                    Y = self.cT.mat.dot(self.cR.mat.dot(self.camera.mat.dot(ori.dot(np.array([0, -20,0, 0])))))
+                    Y += R
+
+                    Z = self.cT.mat.dot(self.cR.mat.dot(self.camera.mat.dot(ori.dot(np.array([0,0,20, 0])))))
+                    Z += R
+                    pygame.draw.line(self.screen, (255,0,0),[R[0],R[1]], [X[0],X[1]], 1)
+                    pygame.draw.line(self.screen, (0,255,0),[R[0],R[1]], [Y[0],Y[1]], 1)
+                    pygame.draw.line(self.screen, (0,0,255),[R[0],R[1]], [Z[0],Z[1]], 1)
+
 
     def translate(self, d):
         T = m.affine(m.rotX(0), d)
@@ -185,6 +201,18 @@ class ProjectionViewer:
             for wireframe in self.wireframes.values():
                 wireframe.setNodes(self.animation[self.frame]) 
 
+    def rotateNode(self, node, axis):
+        R = []
+        if (axis == 'x'): R = m.affine(m.rotX(0.1*np.pi),np.array([0,0,0]))
+        if (axis == 'y'): R = m.affine(m.rotY(0.05*np.pi),np.array([0,0,0]))
+        if (axis == 'z'): R = m.affine(m.rotZ(0.05*np.pi),np.array([0,0,0]))
+        if (axis == 'x-'): R = m.affine(m.rotX(-0.05*np.pi),np.array([0,0,0]))
+        if (axis == 'y-'): R = m.affine(m.rotY(-0.05*np.pi),np.array([0,0,0]))
+        if (axis == 'z-'): R = m.affine(m.rotZ(-0.05*np.pi),np.array([0,0,0]))
+
+
+        for wireframe in self.wireframes.values():
+            wireframe.nodes[node].rotate(R)
 
 if __name__ == '__main__':
     pv = ProjectionViewer(1600, 1200)
