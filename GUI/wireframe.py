@@ -9,7 +9,6 @@ class Node:
         self.z = coordinates[2]
         
         self.ori = m.affine(m.rotX(0), np.array([0,0,0]))
-        print(self.ori)
 
     def rotate(self,M):
         self.ori.set(M.mat.dot(self.ori.mat))
@@ -88,12 +87,15 @@ class Wireframe:
     def transform(self,M):
         self.ori.set(M*self.ori)
 
-    def setNodes(self,arr):
+    def setNodes(self,arr, frame):
         for i in range(0, len(arr)):
-            (x,y,z) = arr[i]
-            self.nodes[i].x = x
-            self.nodes[i].y = y
-            self.nodes[i].z = z
+            #print(arr[i][frame])
+            #(x,y,z) = arr[i]
+            self.nodes[i].x = arr[i][frame][0]
+            self.nodes[i].y = arr[i][frame][1]
+            self.nodes[i].z = arr[i][frame][2]
+
+
 
 
 
