@@ -37,8 +37,8 @@ class csvFetcher(object):
 
         # Check if self_path contains any .cs files
         if not list_of_files:
-            print("No .csv found from "+ self.fetch_path)
-            return
+            raise Exception("No .csv found from "+ self.fetch_path)
+            
         latest_file = max(list_of_files, key=os.path.getctime)
 
         # Model run and test run csv files are named differently

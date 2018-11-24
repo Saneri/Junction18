@@ -54,7 +54,7 @@ class ProjectionViewer:
     frame = 0
 
 
-    def __init__(self, width, height, f1 = "./testdata/Mallisuoritus.csv", f2 = "./testdata/Aivan_tautta_kuraa.csv"):
+    def __init__(self, width, height, f1 = "./testdata/modelRun.csv", f2 = "./testdata/modelRun.csv"):
         self.width = width
         self.height = height
         self.screen = pygame.display.set_mode((width, height))
@@ -176,10 +176,10 @@ class ProjectionViewer:
 
         data1 = k.getSpatial(self.dataModel)
         data2 = k.getSpatial(self.dataCmp)
-        
+
         l1 = len(list(data1.values())[0])
         l2 = len(list(data2.values())[0])
-    
+
         print(l1)
         print(l2)
 

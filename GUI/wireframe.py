@@ -89,8 +89,6 @@ class Wireframe:
 
     def setNodes(self,arr, frame):
         for i in range(0, len(arr)):
-            #print(arr[i][frame])
-            #(x,y,z) = arr[i]
             self.nodes[i].x = arr[i][frame][0]
             self.nodes[i].y = arr[i][frame][1]
             self.nodes[i].z = arr[i][frame][2]
