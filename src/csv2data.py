@@ -7,10 +7,10 @@ class DataReader:
     def __init__(self, filename):
         self.file = filename
         self.acceleration = np.empty(shape=[0, 3])
-        self.velocity = np.empty(shape=[0, 3])
+        self.ang_velocity = np.empty(shape=[0, 3])
         self.read_file()
         self.acceleration = self.acceleration.astype(np.float)
-        self.acceleration = self.velocity.astype(np.float)
+        self.ang_velocity = self.ang_velocity.astype(np.float)
 
     # Only logs data if both LinearAcc and AngularVelocity services are recording
     def read_file(self):
@@ -31,4 +31,4 @@ class DataReader:
         if row[0] == "LinearAcc":
             self.acceleration = np.append(self.acceleration, [[row[1], row[2], row[3]]], axis=0)
         else:
-            self.velocity = np.append(self.velocity, [[row[1], row[2], row[3]]], axis=0)
+            self.ang_velocity = np.append(self.ang_velocity, [[row[1], row[2], row[3]]], axis=0)
