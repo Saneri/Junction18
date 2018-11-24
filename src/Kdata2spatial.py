@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import csv2data as cc
+
+
 
 
 class state():
@@ -80,7 +83,6 @@ def getSpatial(fname = 'src/Mallisuoritus.csv'):
     R = []
     V = []
 
-    print(data.shape)
     for i in range(0,data.shape[0]):
         R.append(S.pos)
         V.append(S.vel)
@@ -94,7 +96,7 @@ def getSpatial(fname = 'src/Mallisuoritus.csv'):
 
     out = {}
     out['S0'] = Z0
-    out['S1'] = R.dot(0.01)
+    out['S1'] = R.dot(0.1)
 
     #return out
 
