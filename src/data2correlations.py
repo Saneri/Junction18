@@ -54,8 +54,17 @@ def evaluate_move(model_data, train_data, plot_data=False):
     max_rot_error = np.max([np.linalg.norm(sig3), np.linalg.norm(sig4)])
     rot_error = np.linalg.norm(sig3-sig4)/max_rot_error
 
-    print("Acceleration score: " + str(acc_error))
-    print("Rotation score: " + str(rot_error))
+    print('Acceleration score: ' + str(acc_error))
+    print('Rotation score: ' + str(rot_error))
+    avg = (rot_error + acc_error)/2
+    if avg <= 0.5:
+        print('Grade: A - Perfect!')
+    elif 0.5 < avg <= 0.7:
+        print('Grade: B - Very good!')
+    elif 0.7 < avg <= 1.0:
+        print('Grade: C - Okay!')
+    else:
+        print('Grade: F - You need more practice!')
 
     if plot_data is True:
         fig, axes = plt.subplots(2, 2)

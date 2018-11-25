@@ -54,7 +54,7 @@ class ProjectionViewer:
     frame = 0
 
 
-    def __init__(self, width, height, f1 = "./testdata/Mallisuoritus.csv", f2 = "./testdata/Aivan_tautta_kuraa.csv"):
+    def __init__(self, width, height, f1 = "./testdata/Mallisuoritus.csv", f2 = "./testdata/Nopea_oikein.csv"):
         self.width = width
         self.height = height
         self.screen = pygame.display.set_mode((width, height))
@@ -176,12 +176,10 @@ class ProjectionViewer:
 
         data1 = k.getSpatial(self.dataModel)
         data2 = k.getSpatial(self.dataCmp)
-        
+
         l1 = len(list(data1.values())[0])
         l2 = len(list(data2.values())[0])
-    
-        print(l1)
-        print(l2)
+
 
         if(l1 < l2):
             for j in data1.values():
@@ -195,8 +193,6 @@ class ProjectionViewer:
                 for i in range(l2,l1):
                     v = np.append(j,np.array([0,0,0]))
 
-        print(np.asarray(data1).shape)
-        print(np.asarray(data2).shape)
 
         self.animation.append(list(data1.values()))
         self.animation.append(list(data2.values()))
@@ -236,10 +232,10 @@ if __name__ == '__main__':
     arm.addNodes([(0,0,0), (100,0,0)])
     arm.addEdges([(0,1)])
 
-    #arm2 = wireframe.Wireframe()
-    #arm2.addNodes([(0,0,0), (100,00,0), (200,0,0)])
-    #arm2.addEdges([(0,1),(1,2)])
+    arm2 = wireframe.Wireframe()
+    arm2.addNodes([(0,0,0), (100,00,0)])
+    arm2.addEdges([(0,1)])
 
-    #pv.addWireframe('model', arm2)
+    pv.addWireframe('model', arm2)
     pv.addWireframe('arm', arm)
     pv.run()

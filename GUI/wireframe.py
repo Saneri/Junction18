@@ -88,12 +88,11 @@ class Wireframe:
         self.ori.set(M*self.ori)
 
     def setNodes(self,arr, frame):
+        idx = min(frame,  len(arr[0]) - 1)
         for i in range(0, len(arr)):
-            #print(arr[i][frame])
-            #(x,y,z) = arr[i]
-            self.nodes[i].x = arr[i][frame][0]
-            self.nodes[i].y = arr[i][frame][1]
-            self.nodes[i].z = arr[i][frame][2]
+            self.nodes[i].x = arr[i][idx][0]
+            self.nodes[i].y = arr[i][idx][1]
+            self.nodes[i].z = arr[i][idx][2]
 
 
 

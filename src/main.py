@@ -12,26 +12,26 @@ import wireframe
 def set_paths():
 
     # sets variable paths if the user so wishes
-    answer = input("\nWould you like to set the environment variable 'MOVESENSEPATH'? (press enter to skip)\n")
+    answer = input('\nWould you like to set the environment variable MOVESENSEPATH? (press enter to skip)\n')
     if len(answer) != 0:
-        os.environ["MOVESENSEPATH"] = answer
+        os.environ['MOVESENSEPATH'] = answer
 
-    answer = input("Would you like to set the environment variable 'MOVESENSEPASTEPATH'? (press enter to skip)\n")
+    answer = input('Would you like to set the environment variable MOVESENSEPASTEPATH? (press enter to skip)\n')
     if len(answer) != 0:
-        os.environ["MOVESENSEPASTEPATH"] = answer
+        os.environ['MOVESENSEPASTEPATH'] = answer
 
 
 def fetcher():
 
     # Creates an instance of csvFetcher to fetch latest csv-files
     fetcher = csvFetcher()
-    answer = input("Do you want to create a new model? (y = yes, n=no)\n")
-    if answer == "yes" or answer == "y":
-        input("Please perform a model measurement with your sensor and then press any key to continue\n")
+    answer = input('Do you want to create a new model? (y = yes, n=no)\n')
+    if answer == 'yes' or answer == 'y':
+        input('Please perform a model measurement with your sensor and then press any key to continue\n')
         modelpath = fetcher.fetch(True)
     else:
-        modelpath = input("Please give the path for .csv model file")
-    input("Please perform a test measurement with your sensor and then press any key to continue\n")
+        modelpath = input('Please give the path for .csv model file\n')
+    input('Please perform a test measurement with your sensor and then press any key to continue\n')
     testpath = fetcher.fetch(False)
 
     return modelpath,testpath
@@ -62,7 +62,18 @@ def main():
     #set_paths()
     modelpath, testpath = fetcher()
     evaluate(modelpath, testpath)
-    view_projection(modelpath, testpath)
+    # view_projection(modelpath, testpath)
+    while True:
+        answer = input('Want to retry? (y/yes = yes)\n')
+        if answer == 'y' or answer == 'yes':
+            input('Please perform a test measurement with your sensor and then press any key to continue\n')
+            f = csvFetcher()
+            testpath = f.fetch(False)
+            evaluate(modelpath, testpath)
+            # view_projection(modelpath, testpath)
+        else:
+            print('The program will now close.')
+            break
 
 
 main()
