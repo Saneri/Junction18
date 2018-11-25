@@ -236,10 +236,10 @@ if __name__ == '__main__':
     arm.addNodes([(0,0,0), (100,0,0)])
     arm.addEdges([(0,1)])
 
-    #arm2 = wireframe.Wireframe()
-    #arm2.addNodes([(0,0,0), (100,00,0), (200,0,0)])
-    #arm2.addEdges([(0,1),(1,2)])
+    arm2 = wireframe.Wireframe()
+    arm2.addNodes([(0,0,0), (100,00,0), (200,0,0)])
+    arm2.addEdges([(0,1),(1,2)])
 
-    #pv.addWireframe('model', arm2)
+    pv.addWireframe('model', arm2)
     pv.addWireframe('arm', arm)
     pv.run()
