@@ -7,8 +7,8 @@ import numpy as np
 def find_shift(sig1, sig2):
     '''Shift shorter signal to be at same point'''
 
-    sig1[:, 2] = sig1[:, 2] - 9.81
-    sig2[:, 2] = sig2[:, 2] - 9.81
+    sig1[:, 2] = sig1[:, 2]
+    sig2[:, 2] = sig2[:, 2]
     l_s1 = sig1.shape[0]
     l_s2 = sig2.shape[0]
     L = np.max([l_s1, l_s2])
